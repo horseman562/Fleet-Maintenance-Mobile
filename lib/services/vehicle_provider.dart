@@ -3,7 +3,7 @@ import '../models/vehicle.dart';
 import 'api_service.dart';
 
 class VehicleProvider with ChangeNotifier {
-  final ApiService _apiService = ApiService();
+  static final ApiService _apiService = ApiService();
   
   List<Vehicle> _vehicles = [];
   Vehicle? _selectedVehicle;

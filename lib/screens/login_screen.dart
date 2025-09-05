@@ -21,9 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill with test credentials for development
-    _emailController.text = 'test@example.com';
-    _passwordController.text = 'password';
+    // Pre-fill with development credentials
+    _emailController.text = 'deathreaper754@gmail.com';
+    _passwordController.text = 'babi123456';
   }
 
   @override
@@ -219,13 +219,13 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
+      final provider = context.read<VehicleProvider>();
       final apiService = ApiService();
-      await apiService.login(_emailController.text, _passwordController.text);
+      final loginResponse = await apiService.login(_emailController.text, _passwordController.text);
       
-      // Set the token in the provider
+      // Set the token in the provider which will set it in the shared instance
       if (mounted) {
-        final provider = context.read<VehicleProvider>();
-        provider.setAuthToken('dummy-token'); // Token is already set in apiService
+        provider.setAuthToken(loginResponse['token']); // Pass the actual token
         
         // Navigate to main screen
         Navigator.of(context).pushReplacement(
