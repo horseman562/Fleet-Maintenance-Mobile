@@ -99,6 +99,7 @@ class HealthAssessment {
 }
 
 class ServiceItem {
+  final String? id;
   final String name;
   final String? icon;
   final double? estimatedCost;
@@ -107,6 +108,7 @@ class ServiceItem {
   final int? daysUntilDue;
 
   ServiceItem({
+    this.id,
     required this.name,
     this.icon,
     this.estimatedCost,
@@ -117,6 +119,7 @@ class ServiceItem {
 
   factory ServiceItem.fromJson(Map<String, dynamic> json) {
     return ServiceItem(
+      id: json['id'],
       name: json['name'] ?? '',
       icon: json['icon'],
       estimatedCost: _parseDouble(json['estimated_cost']),

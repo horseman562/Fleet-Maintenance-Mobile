@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/vehicle.dart';
+import '../models/service_submission.dart';
 import 'api_service.dart';
 
 class VehicleProvider with ChangeNotifier {
@@ -7,12 +8,14 @@ class VehicleProvider with ChangeNotifier {
   
   List<Vehicle> _vehicles = [];
   Vehicle? _selectedVehicle;
+  List<ServiceSubmission> _submissions = [];
   bool _isLoading = false;
   String? _error;
   String _searchQuery = '';
 
   List<Vehicle> get vehicles => _vehicles;
   Vehicle? get selectedVehicle => _selectedVehicle;
+  List<ServiceSubmission> get submissions => _submissions;
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get searchQuery => _searchQuery;
@@ -128,6 +131,60 @@ class VehicleProvider with ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  Future<Map<String, dynamic>> submitService({
+    required String serviceScheduleId,
+    required String serviceDate,
+    required int odometerReading,
+    required double cost,
+    String? workshopName,
+    String? serviceProvider,
+    String? workshopContact,
+    String? notes,
+    List<String>? receiptPhotos,
+    List<String>? servicePhotos,
+  }) async {
+    try {
+      _error = null;
+      final result = await _apiService.submitService(
+        serviceScheduleId: serviceScheduleId,
+        serviceDate: serviceDate,
+        odometerReading: odometerReading,
+        cost: cost,
+        workshopName: workshopName,
+        serviceProvider: serviceProvider,
+        workshopContact: workshopContact,
+        notes: notes,
+        receiptPhotos: receiptPhotos,
+        servicePhotos: servicePhotos,
+      );
+      
+      // Refresh submissions after successful submission
+      await loadSubmissions();
+      
+      return result;
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> loadSubmissions({bool refresh = false}) async {
+    if (_isLoading && !refresh) return;
+    
+    _setLoading(true);
+    _error = null;
+
+    try {
+      final submissionsData = await _apiService.getSubmissions();
+      _submissions = submissionsData.map((json) => ServiceSubmission.fromJson(json)).toList();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _setLoading(false);
+    }
   }
 
   void _setLoading(bool loading) {

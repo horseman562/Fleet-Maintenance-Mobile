@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../services/vehicle_provider.dart';
 import '../models/vehicle.dart';
 import 'odometer_update_screen.dart';
+import 'service_submission_screen.dart';
+import 'submission_history_screen.dart';
 
 class VehicleDetailScreen extends StatefulWidget {
   final String vehicleId;
@@ -69,6 +71,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 expandedHeight: 200,
                 pinned: true,
                 backgroundColor: _getStatusColor(vehicle),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.history),
+                    onPressed: _navigateToSubmissionHistory,
+                    tooltip: 'View Submission History',
+                  ),
+                ],
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(
                     vehicle.plateNumber,
@@ -520,6 +529,28 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                         ),
                       ),
                     ),
+                  // Submit Receipt Button for overdue services
+                  if (color == Colors.red && service.id != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: SizedBox(
+                        height: 28,
+                        child: ElevatedButton(
+                          onPressed: () => _navigateToSubmitService(service),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: const Size(0, 0),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            'Submit Receipt',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ],
@@ -784,6 +815,30 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     return number.toString().replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
       (Match m) => '${m[1]},',
+    );
+  }
+
+  void _navigateToSubmitService(ServiceItem service) {
+    if (service.id != null) {
+      final provider = context.read<VehicleProvider>();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ServiceSubmissionScreen(
+            service: service,
+            vehicle: provider.selectedVehicle!,
+          ),
+        ),
+      );
+    }
+  }
+
+  void _navigateToSubmissionHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SubmissionHistoryScreen(),
+      ),
     );
   }
 }
