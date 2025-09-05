@@ -1,0 +1,9 @@
+// Local development configuration example
+// Copy this file to local_config.dart and add your credentials
+class LocalConfig {
+  static const String devEmail = 'your_email@example.com';
+  static const String devPassword = 'your_password';
+  
+  // Add your local network IP here
+  static const String localApiUrl = 'http://192.168.0.X:8000/api/mobile';
+}

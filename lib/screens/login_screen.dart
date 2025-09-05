@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/vehicle_provider.dart';
 import '../services/api_service.dart';
+import '../config/local_config.dart';
 import 'vehicle_search_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,9 +22,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill with development credentials
-    _emailController.text = 'deathreaper754@gmail.com';
-    _passwordController.text = 'babi123456';
+    // Pre-fill with development credentials from config
+    _emailController.text = LocalConfig.devEmail;
+    _passwordController.text = LocalConfig.devPassword;
   }
 
   @override

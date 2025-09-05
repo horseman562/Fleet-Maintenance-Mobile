@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/vehicle.dart';
+import '../config/local_config.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.0.5:8000/api/mobile';
+  static String get baseUrl => LocalConfig.localApiUrl;
   String? _authToken;
 
   void setAuthToken(String token) {

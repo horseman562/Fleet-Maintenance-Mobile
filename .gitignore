@@ -43,3 +43,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local configuration with sensitive data
+lib/config/local_config.dart
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
