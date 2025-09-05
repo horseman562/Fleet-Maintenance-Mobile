@@ -27,17 +27,17 @@ class Vehicle {
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
     return Vehicle(
-      id: json['id'],
-      plateNumber: json['plate_number'],
-      make: json['make'],
-      model: json['model'],
-      year: json['year'],
-      vehicleType: json['vehicle_type'],
-      currentOdometer: json['current_odometer'],
-      isActive: json['is_active'],
+      id: json['id'] ?? '',
+      plateNumber: json['plate_number'] ?? '',
+      make: json['make'] ?? '',
+      model: json['model'] ?? '',
+      year: json['year'] ?? 0,
+      vehicleType: json['vehicle_type'] ?? '',
+      currentOdometer: json['current_odometer'] ?? 0,
+      isActive: json['is_active'] ?? true,
       notes: json['notes'],
-      createdAt: DateTime.parse(json['created_at']),
-      healthAssessment: HealthAssessment.fromJson(json['health_assessment']),
+      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      healthAssessment: HealthAssessment.fromJson(json['health_assessment'] ?? {}),
     );
   }
 
@@ -85,22 +85,22 @@ class HealthAssessment {
 
   factory HealthAssessment.fromJson(Map<String, dynamic> json) {
     return HealthAssessment(
-      overallStatus: json['overall_status'],
-      immediateAttentionNeeded: json['immediate_attention_needed'],
-      overdueServices: (json['overdue_services'] as List)
+      overallStatus: json['overall_status'] ?? 'unknown',
+      immediateAttentionNeeded: json['immediate_attention_needed'] ?? false,
+      overdueServices: (json['overdue_services'] as List? ?? [])
           .map((item) => ServiceItem.fromJson(item))
           .toList(),
-      upcomingServices: (json['upcoming_services'] as List)
+      upcomingServices: (json['upcoming_services'] as List? ?? [])
           .map((item) => ServiceItem.fromJson(item))
           .toList(),
-      totalEstimatedCost: (json['total_estimated_cost'] ?? 0).toDouble(),
+      totalEstimatedCost: _parseDouble(json['total_estimated_cost']) ?? 0.0,
     );
   }
 }
 
 class ServiceItem {
   final String name;
-  final String icon;
+  final String? icon;
   final double? estimatedCost;
   final String? dueDate;
   final int? dueOdometer;
@@ -108,7 +108,7 @@ class ServiceItem {
 
   ServiceItem({
     required this.name,
-    required this.icon,
+    this.icon,
     this.estimatedCost,
     this.dueDate,
     this.dueOdometer,
@@ -117,9 +117,9 @@ class ServiceItem {
 
   factory ServiceItem.fromJson(Map<String, dynamic> json) {
     return ServiceItem(
-      name: json['name'],
+      name: json['name'] ?? '',
       icon: json['icon'],
-      estimatedCost: json['estimated_cost']?.toDouble(),
+      estimatedCost: _parseDouble(json['estimated_cost']),
       dueDate: json['due_date'],
       dueOdometer: json['due_odometer'],
       daysUntilDue: json['days_until_due'],
@@ -129,4 +129,12 @@ class ServiceItem {
   String get formattedCost => estimatedCost != null 
       ? 'RM ${estimatedCost!.toStringAsFixed(2)}'
       : '';
+}
+
+double? _parseDouble(dynamic value) {
+  if (value == null) return null;
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) return double.tryParse(value);
+  return null;
 }

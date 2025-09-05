@@ -7,10 +7,7 @@ import 'odometer_update_screen.dart';
 class VehicleDetailScreen extends StatefulWidget {
   final String vehicleId;
 
-  const VehicleDetailScreen({
-    super.key,
-    required this.vehicleId,
-  });
+  const VehicleDetailScreen({super.key, required this.vehicleId});
 
   @override
   State<VehicleDetailScreen> createState() => _VehicleDetailScreenState();
@@ -44,12 +41,17 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(height: 16),
                     Text('Failed to load vehicle details'),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => provider.loadVehicleDetails(widget.vehicleId),
+                      onPressed: () =>
+                          provider.loadVehicleDetails(widget.vehicleId),
                       child: const Text('Try Again'),
                     ),
                   ],
@@ -59,7 +61,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
           }
 
           final vehicle = provider.selectedVehicle!;
-          
+
           return CustomScrollView(
             slivers: [
               // App Bar with Vehicle Info
@@ -116,7 +118,8 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         vehicle.displayName,
@@ -146,28 +149,28 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                   ),
                 ),
               ),
-              
+
               // Content
               SliverToBoxAdapter(
                 child: Column(
                   children: [
                     // Health Assessment Card
                     _buildHealthAssessmentCard(vehicle),
-                    
+
                     // Quick Actions
                     _buildQuickActionsCard(vehicle),
-                    
+
                     // Upcoming Services
                     if (vehicle.healthAssessment.upcomingServices.isNotEmpty)
                       _buildUpcomingServicesCard(vehicle),
-                    
+
                     // Overdue Services
                     if (vehicle.healthAssessment.overdueServices.isNotEmpty)
                       _buildOverdueServicesCard(vehicle),
-                    
+
                     // Vehicle Info
                     _buildVehicleInfoCard(vehicle),
-                    
+
                     const SizedBox(height: 32),
                   ],
                 ),
@@ -203,7 +206,10 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _getStatusColor(vehicle).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(16),
@@ -226,49 +232,96 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                   'Overdue',
                   vehicle.healthAssessment.overdueServices.length.toString(),
                   Colors.red,
+                  Icons.error,
                 ),
                 _buildHealthStat(
                   'Due Soon',
                   vehicle.healthAssessment.upcomingServices.length.toString(),
                   Colors.amber,
+                  Icons.schedule,
                 ),
                 _buildHealthStat(
                   'Est. Cost',
                   'RM ${vehicle.healthAssessment.totalEstimatedCost.toStringAsFixed(0)}',
                   Colors.blue,
+                  Icons.attach_money,
                 ),
               ],
             ),
+
+            // Immediate Attention Banner
+            if (vehicle.healthAssessment.immediateAttentionNeeded) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.priority_high,
+                      color: Colors.red.shade600,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Immediate attention needed! Vehicle has overdue services.',
+                        style: TextStyle(
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHealthStat(String label, String value, Color color) {
+  Widget _buildHealthStat(
+    String label,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
         ),
         child: Column(
           children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 8),
             Text(
               value,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: color,
               ),
             ),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                fontSize: 12,
-                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: color.withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -287,10 +340,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
           children: [
             const Text(
               'Quick Actions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -311,7 +361,9 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                     onPressed: () {
                       // TODO: Navigate to add service record
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Service logging coming soon!')),
+                        const SnackBar(
+                          content: Text('Service logging coming soon!'),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.build),
@@ -343,16 +395,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 const SizedBox(width: 8),
                 const Text(
                   'Due Soon',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             ...vehicle.healthAssessment.upcomingServices.map(
-              (service) => _buildServiceItem(service, Colors.amber),
+              (service) => _buildServiceItem(service, Colors.amber, vehicle),
             ),
           ],
         ),
@@ -374,16 +423,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
                 const SizedBox(width: 8),
                 const Text(
                   'Overdue',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             ...vehicle.healthAssessment.overdueServices.map(
-              (service) => _buildServiceItem(service, Colors.red),
+              (service) => _buildServiceItem(service, Colors.red, vehicle),
             ),
           ],
         ),
@@ -391,60 +437,99 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
     );
   }
 
-  Widget _buildServiceItem(ServiceItem service, Color color) {
+  Widget _buildServiceItem(ServiceItem service, Color color, Vehicle vehicle) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        color: color.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Icon(
-              Icons.build,
-              size: 20,
-              color: color,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  service.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: color,
-                  ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                if (service.dueDate != null)
-                  Text(
-                    'Due: ${service.dueDate}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: color,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          if (service.estimatedCost != null)
-            Text(
-              service.formattedCost,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: color,
+                child: Icon(
+                  _getServiceIcon(service.name),
+                  size: 24,
+                  color: color,
+                ),
               ),
-            ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      service.name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (service.dueDate != null)
+                      Text(
+                        'Due: ${service.dueDate}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (service.estimatedCost != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        service.formattedCost,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  if (service.dueOdometer != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        '@ ${service.dueOdometer} km',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+          ),
+
+          // Detailed Status Information
+          if (service.daysUntilDue != null || service.dueOdometer != null) ...[
+            const SizedBox(height: 12),
+            ..._buildStatusDetails(service, color, vehicle),
+          ],
         ],
       ),
     );
@@ -460,10 +545,7 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
           children: [
             const Text(
               'Vehicle Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildInfoRow('Make', vehicle.make),
@@ -489,19 +571,13 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
             width: 100,
             child: Text(
               '$label:',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
           ),
         ],
@@ -562,5 +638,152 @@ class _VehicleDetailScreenState extends State<VehicleDetailScreen> {
       default:
         return Icons.directions_car;
     }
+  }
+
+  IconData _getServiceIcon(String serviceName) {
+    final name = serviceName.toLowerCase();
+    if (name.contains('oil') || name.contains('minyak')) {
+      return Icons.opacity;
+    } else if (name.contains('brake') || name.contains('brek')) {
+      return Icons.disc_full;
+    } else if (name.contains('tire') ||
+        name.contains('tyre') ||
+        name.contains('tayar')) {
+      return Icons.tire_repair;
+    } else if (name.contains('engine')) {
+      return Icons.engineering;
+    } else if (name.contains('battery') || name.contains('bateri')) {
+      return Icons.battery_charging_full;
+    } else if (name.contains('filter')) {
+      return Icons.air;
+    } else {
+      return Icons.build;
+    }
+  }
+
+  Color _getStatusDetailColor(int daysUntilDue, Color fallbackColor) {
+    if (daysUntilDue < 0) {
+      return Colors.red.shade600;
+    } else if (daysUntilDue <= 7) {
+      return Colors.amber.shade600;
+    } else if (daysUntilDue <= 30) {
+      return Colors.orange.shade600;
+    } else {
+      return Colors.grey.shade600;
+    }
+  }
+
+  IconData _getStatusDetailIcon(int daysUntilDue) {
+    if (daysUntilDue < 0) {
+      return Icons.error;
+    } else if (daysUntilDue <= 7) {
+      return Icons.warning;
+    } else if (daysUntilDue <= 30) {
+      return Icons.schedule;
+    } else {
+      return Icons.info;
+    }
+  }
+
+  String _getStatusDetailText(int daysUntilDue) {
+    if (daysUntilDue < 0) {
+      final daysOverdue = daysUntilDue.abs();
+      return '$daysOverdue day${daysOverdue == 1 ? '' : 's'} overdue';
+    } else if (daysUntilDue == 0) {
+      return 'Due today!';
+    } else if (daysUntilDue <= 7) {
+      return '$daysUntilDue day${daysUntilDue == 1 ? '' : 's'} left';
+    } else if (daysUntilDue <= 30) {
+      return '$daysUntilDue days until due';
+    } else {
+      final weeks = (daysUntilDue / 7).round();
+      return 'Due in $weeks week${weeks == 1 ? '' : 's'}';
+    }
+  }
+
+  List<Widget> _buildStatusDetails(ServiceItem service, Color color, Vehicle vehicle) {
+    final List<Widget> details = [];
+
+    // Date-based status (always show if daysUntilDue is available)
+    if (service.daysUntilDue != null) {
+      details.add(_buildStatusDetailRow(
+        _getStatusDetailIcon(service.daysUntilDue!),
+        'Date: ${_getStatusDetailText(service.daysUntilDue!)}',
+        _getStatusDetailColor(service.daysUntilDue!, color),
+      ));
+    }
+
+    // Odometer-based status (show if service has due odometer)
+    if (service.dueOdometer != null) {
+      final odometerOverdue = _calculateOdometerOverdue(vehicle, service);
+      String odometerText;
+      
+      if (odometerOverdue != null && odometerOverdue > 0) {
+        // Service is overdue by odometer
+        odometerText = 'Odometer: ${_formatNumber(odometerOverdue)} km overdue';
+      } else {
+        // Service is not yet due by odometer or exactly at due point
+        final remaining = service.dueOdometer! - vehicle.currentOdometer;
+        if (remaining > 0) {
+          odometerText = 'Odometer: ${_formatNumber(remaining)} km remaining';
+        } else {
+          odometerText = 'Odometer: Due at ${_formatNumber(service.dueOdometer!)} km';
+        }
+      }
+
+      if (service.daysUntilDue != null) {
+        details.add(const SizedBox(height: 8));
+      }
+      
+      details.add(_buildStatusDetailRow(
+        Icons.speed,
+        odometerText,
+        odometerOverdue != null && odometerOverdue > 0 
+            ? Colors.red.shade600 
+            : _getStatusDetailColor(service.daysUntilDue ?? 1, color),
+      ));
+    }
+
+    return details;
+  }
+
+  Widget _buildStatusDetailRow(IconData icon, String text, Color color) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: color,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  int? _calculateOdometerOverdue(Vehicle vehicle, ServiceItem service) {
+    if (service.dueOdometer == null) return null;
+    final overdue = vehicle.currentOdometer - service.dueOdometer!;
+    return overdue > 0 ? overdue : null;
+  }
+
+  String _formatNumber(int number) {
+    return number.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]},',
+    );
   }
 }
