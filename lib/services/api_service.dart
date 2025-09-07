@@ -88,7 +88,7 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password, {String? fcmToken}) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
@@ -99,6 +99,7 @@ class ApiService {
         body: json.encode({
           'email': email,
           'password': password,
+          if (fcmToken != null) 'fcm_token': fcmToken,
         }),
       );
       
@@ -214,6 +215,28 @@ class ApiService {
         throw Exception('Authentication required');
       } else {
         throw Exception('Failed to load submissions: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network error: $e');
+    }
+  }
+
+  Future<bool> updateFCMToken(String fcmToken) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/fcm-token'),
+        headers: _headers,
+        body: json.encode({
+          'fcm_token': fcmToken,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 401) {
+        throw Exception('Authentication required');
+      } else {
+        throw Exception('Failed to update FCM token: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Network error: $e');

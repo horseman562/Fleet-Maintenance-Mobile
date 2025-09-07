@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/vehicle_provider.dart';
 import '../services/api_service.dart';
+import '../services/notification_service.dart';
 import '../config/local_config.dart';
 import 'vehicle_search_screen.dart';
 
@@ -222,7 +223,16 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final provider = context.read<VehicleProvider>();
       final apiService = ApiService();
-      final loginResponse = await apiService.login(_emailController.text, _passwordController.text);
+      
+      // Get FCM token
+      final fcmToken = await NotificationService.getFCMToken();
+      
+      // Login with FCM token
+      final loginResponse = await apiService.login(
+        _emailController.text, 
+        _passwordController.text,
+        fcmToken: fcmToken,
+      );
       
       // Set the token in the provider which will set it in the shared instance
       if (mounted) {
